@@ -33,7 +33,7 @@ def query_knowledge_base(
     query_embedding = get_query_embedding(query)
     
     # Step 2: Search for similar documents
-    search_results = search_similar(query_embedding, n_results=top_k)
+    search_results = search_similar(query_embedding, n_results=top_k, user_id=user_id)
     
     # Step 3: Filter and format results
     context_chunks = []
@@ -88,7 +88,7 @@ def query_knowledge_base(
 def get_context_preview(query: str, top_k: int = 3, user_id: str = None) -> List[Dict]:
     """Get a preview of matching context without generating an answer"""
     query_embedding = get_query_embedding(query)
-    search_results = search_similar(query_embedding, n_results=top_k)
+    search_results = search_similar(query_embedding, n_results=top_k, user_id=user_id)
     
     chunks = []
     if search_results and search_results.get("documents"):
