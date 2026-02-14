@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+__pycache__/
+venv/
+.venv/
+
+# Environment Variables
+.env
+
+# Database & Storage
+*.db
+*.sqlite
+logs/
+uploads/
+vector_store.json
+
+# Build Output
+dist/
+build/
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

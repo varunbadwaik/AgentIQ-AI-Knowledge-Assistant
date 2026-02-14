@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-app: #09090b;
+  --bg-card: #18181b;
+  --border-subtle: #27272a;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --accent-primary: #fafafa;
+  /* White accent for mono look */
+  --accent-bg: #fafafa;
+  --accent-text: #09090b;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+* {
+  font-family: 'Work Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #3f3f46;
+  /* Zinc 700 */
+  color: #fff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Utilities */
+.glass-panel {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
