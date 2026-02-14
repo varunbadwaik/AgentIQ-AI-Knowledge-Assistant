@@ -53,11 +53,11 @@ export default function Dashboard({ onNavigate }) {
     }
 
     const handleFeedback = async (isPositive) => {
+        if (!result?.query_id) return
         try {
             await axios.post('/api/feedback', {
-                query,
-                result: result?.answer,
-                is_positive: isPositive
+                query_id: result.query_id,
+                was_helpful: isPositive
             })
             setFeedback(isPositive ? 'positive' : 'negative')
         } catch (err) {
@@ -258,12 +258,12 @@ export default function Dashboard({ onNavigate }) {
                                                                 <span style={{ fontWeight: 500, color: '#e4e4e7', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                     {source.source}
                                                                 </span>
-                                                                {source.confidence && (
+                                                                {source.similarity && (
                                                                     <span style={{
                                                                         fontSize: '10px', fontWeight: 600,
-                                                                        color: getConfidenceColor(source.confidence * 100)
+                                                                        color: getConfidenceColor(source.similarity)
                                                                     }}>
-                                                                        {(source.confidence * 100).toFixed(0)}%
+                                                                        {source.similarity.toFixed(0)}%
                                                                     </span>
                                                                 )}
                                                             </div>
