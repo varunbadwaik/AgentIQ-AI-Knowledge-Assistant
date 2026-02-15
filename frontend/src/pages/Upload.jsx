@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import axios from 'axios'
-import { Upload as UploadIcon, FileText, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Upload as UploadIcon, FileText, X, CheckCircle, AlertCircle, Loader2, Menu } from 'lucide-react'
 import AppSidebar from '../components/AppSidebar'
 
 export default function Upload({ onNavigate }) {
@@ -8,6 +8,7 @@ export default function Upload({ onNavigate }) {
     const [uploading, setUploading] = useState(false)
     const [dragActive, setDragActive] = useState(false)
     const [uploadResults, setUploadResults] = useState([])
+    const [sidebarOpen, setSidebarOpen] = useState(false)
 
     const handleDrag = useCallback((e) => {
         e.preventDefault()
@@ -69,14 +70,17 @@ export default function Upload({ onNavigate }) {
 
     return (
         <div style={{ display: 'flex', height: '100vh', background: '#09090b', color: '#fafafa', fontFamily: "'Work Sans', system-ui, sans-serif", overflow: 'hidden' }}>
-            <AppSidebar activePage="upload" onNavigate={onNavigate} />
+            <AppSidebar activePage="upload" onNavigate={onNavigate} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 {/* Top bar */}
                 <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 24px', borderBottom: '1px solid #27272a'
                 }}>
+                    <button className="sidebar-mobile-toggle" onClick={() => setSidebarOpen(true)}>
+                        <Menu style={{ width: '18px', height: '18px' }} />
+                    </button>
                     <div style={{
                         width: '32px', height: '32px', borderRadius: '50%',
                         background: '#f4f4f5', color: '#09090b',
@@ -86,10 +90,10 @@ export default function Upload({ onNavigate }) {
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
+                <div className="content-padding" style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
                     <div style={{ maxWidth: '640px', margin: '0 auto' }}>
                         {/* Header */}
-                        <h1 style={{ fontSize: '24px', fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.02em', color: '#fafafa' }}>
+                        <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.02em', color: '#fafafa' }}>
                             Upload Documents
                         </h1>
                         <p style={{ fontSize: '14px', color: '#a1a1aa', margin: '0 0 32px' }}>
@@ -106,7 +110,7 @@ export default function Upload({ onNavigate }) {
                                 position: 'relative', borderRadius: '8px',
                                 border: dragActive ? '2px dashed #fafafa' : '1px dashed #3f3f46',
                                 background: dragActive ? '#18181b' : 'transparent',
-                                padding: '48px 32px', textAlign: 'center',
+                                padding: '48px 16px', textAlign: 'center',
                                 transition: 'all 0.2s ease', cursor: 'pointer'
                             }}
                         >
@@ -143,16 +147,16 @@ export default function Upload({ onNavigate }) {
                                             padding: '12px 16px', borderRadius: '6px',
                                             background: '#18181b', border: '1px solid #27272a'
                                         }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <span style={{ fontSize: '16px' }}>{getFileIcon(file.name)}</span>
-                                                <div>
-                                                    <p style={{ fontSize: '13px', fontWeight: 500, margin: 0, color: '#fafafa' }}>{file.name}</p>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                                <span style={{ fontSize: '16px', flexShrink: 0 }}>{getFileIcon(file.name)}</span>
+                                                <div style={{ minWidth: 0 }}>
+                                                    <p style={{ fontSize: '13px', fontWeight: 500, margin: 0, color: '#fafafa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</p>
                                                     <p style={{ fontSize: '11px', color: '#71717a', margin: '2px 0 0' }}>{formatFileSize(file.size)}</p>
                                                 </div>
                                             </div>
                                             <button onClick={() => removeFile(index)} style={{
                                                 background: 'transparent', border: 'none', cursor: 'pointer',
-                                                color: '#71717a', padding: '4px', borderRadius: '4px'
+                                                color: '#71717a', padding: '4px', borderRadius: '4px', flexShrink: 0
                                             }}
                                                 onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
                                                 onMouseLeave={e => e.currentTarget.style.color = '#71717a'}
@@ -200,8 +204,8 @@ export default function Upload({ onNavigate }) {
                                             ) : (
                                                 <AlertCircle style={{ width: '16px', height: '16px', color: '#ef4444', flexShrink: 0 }} />
                                             )}
-                                            <div>
-                                                <p style={{ fontSize: '13px', fontWeight: 500, margin: 0, color: result.success ? '#d1fae5' : '#fca5a5' }}>
+                                            <div style={{ minWidth: 0 }}>
+                                                <p style={{ fontSize: '13px', fontWeight: 500, margin: 0, color: result.success ? '#d1fae5' : '#fca5a5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {result.name}
                                                 </p>
                                                 <p style={{ fontSize: '11px', margin: '2px 0 0', color: result.success ? '#6ee7b7' : '#f87171' }}>

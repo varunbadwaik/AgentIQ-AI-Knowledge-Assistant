@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { BarChart3, FileText, Search, AlertTriangle, TrendingUp, ThumbsUp, Clock, Loader2, Trash2, X, RefreshCw } from 'lucide-react'
+import { BarChart3, FileText, Search, AlertTriangle, TrendingUp, ThumbsUp, Clock, Loader2, Trash2, X, RefreshCw, Menu } from 'lucide-react'
 import AppSidebar from '../components/AppSidebar'
 
 export default function Admin({ onNavigate }) {
@@ -12,6 +12,7 @@ export default function Admin({ onNavigate }) {
     const [confirmDelete, setConfirmDelete] = useState(null)
     const [deletingGap, setDeletingGap] = useState(null)
     const [confirmDeleteGap, setConfirmDeleteGap] = useState(null)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
 
     useEffect(() => { fetchData() }, [])
 
@@ -58,7 +59,6 @@ export default function Admin({ onNavigate }) {
         } finally { setDeletingGap(null) }
     }
 
-    // Stat cards - Modern Minimalist
     const statCards = [
         { label: 'Documents', value: stats?.total_documents || 0, icon: FileText },
         { label: 'Chunks', value: stats?.total_chunks || 0, icon: BarChart3 },
@@ -69,14 +69,17 @@ export default function Admin({ onNavigate }) {
 
     return (
         <div style={{ display: 'flex', height: '100vh', background: '#09090b', color: '#fafafa', fontFamily: "'Work Sans', system-ui, sans-serif", overflow: 'hidden' }}>
-            <AppSidebar activePage="admin" onNavigate={onNavigate} />
+            <AppSidebar activePage="admin" onNavigate={onNavigate} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 {/* Top bar */}
                 <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 24px', borderBottom: '1px solid #27272a'
                 }}>
+                    <button className="sidebar-mobile-toggle" onClick={() => setSidebarOpen(true)}>
+                        <Menu style={{ width: '18px', height: '18px' }} />
+                    </button>
                     <div style={{
                         width: '32px', height: '32px', borderRadius: '50%',
                         background: '#f4f4f5', color: '#09090b',
@@ -86,7 +89,7 @@ export default function Admin({ onNavigate }) {
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
+                <div className="content-padding" style={{ flex: 1, overflowY: 'auto', padding: '32px 40px' }}>
                     {loading ? (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
                             <div style={{ textAlign: 'center' }}>
@@ -97,9 +100,9 @@ export default function Admin({ onNavigate }) {
                     ) : (
                         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
                             {/* Header */}
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
                                 <div>
-                                    <h1 style={{ fontSize: '24px', fontWeight: 600, margin: '0 0 4px', letterSpacing: '-0.02em', color: '#fafafa' }}>
+                                    <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 600, margin: '0 0 4px', letterSpacing: '-0.02em', color: '#fafafa' }}>
                                         Analytics
                                     </h1>
                                     <p style={{ fontSize: '14px', color: '#a1a1aa', margin: 0 }}>
@@ -120,7 +123,7 @@ export default function Admin({ onNavigate }) {
                             </div>
 
                             {/* Stat Cards */}
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '28px' }}>
+                            <div className="grid-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '28px' }}>
                                 {statCards.map((stat, i) => (
                                     <div key={i} style={{
                                         padding: '16px', borderRadius: '8px',
@@ -136,7 +139,7 @@ export default function Admin({ onNavigate }) {
                             </div>
 
                             {/* Two-column grid */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="grid-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                 {/* Most Used Documents */}
                                 <div style={{ background: '#18181b', borderRadius: '8px', border: '1px solid #27272a', overflow: 'hidden' }}>
                                     <div style={{ padding: '12px 16px', borderBottom: '1px solid #27272a', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -155,7 +158,7 @@ export default function Admin({ onNavigate }) {
                                                         onMouseEnter={e => e.currentTarget.style.background = '#27272a'}
                                                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                                     >
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                                                             <span style={{
                                                                 width: '18px', height: '18px', borderRadius: '4px',
                                                                 background: '#27272a', color: '#a1a1aa',
@@ -236,7 +239,7 @@ export default function Admin({ onNavigate }) {
                                                         background: '#27272a', border: '1px solid #3f3f46'
                                                     }}>
                                                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-                                                            <p style={{ fontSize: '13px', fontWeight: 500, color: '#e4e4e7', margin: '0 0 4px' }}>
+                                                            <p style={{ fontSize: '13px', fontWeight: 500, color: '#e4e4e7', margin: '0 0 4px', wordBreak: 'break-word' }}>
                                                                 "{gap.query}"
                                                             </p>
                                                             {confirmDeleteGap === gap.id ? (
@@ -259,7 +262,7 @@ export default function Admin({ onNavigate }) {
                                                             ) : (
                                                                 <button onClick={() => setConfirmDeleteGap(gap.id)} style={{
                                                                     padding: '4px', borderRadius: '4px', background: 'transparent',
-                                                                    border: 'none', color: '#71717a', cursor: 'pointer'
+                                                                    border: 'none', color: '#71717a', cursor: 'pointer', flexShrink: 0
                                                                 }}
                                                                     onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
                                                                     onMouseLeave={e => e.currentTarget.style.color = '#71717a'}
@@ -268,7 +271,7 @@ export default function Admin({ onNavigate }) {
                                                                 </button>
                                                             )}
                                                         </div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                                             <span style={{ fontSize: '11px', fontWeight: 500, color: '#f59e0b' }}>
                                                                 {gap.confidence?.toFixed(0)}% confidence
                                                             </span>

@@ -4,7 +4,7 @@ import {
     Brain, Search, Sparkles, FileText, ThumbsUp, ThumbsDown,
     AlertCircle, Loader2, Plus, MessageSquare, Upload,
     BarChart3, Settings, HelpCircle, Mic, Send, ChevronRight,
-    Pin, Clock, Trash2, BookOpen, Zap, LayoutDashboard, Copy
+    Pin, Clock, Trash2, BookOpen, Zap, LayoutDashboard, Copy, Menu
 } from 'lucide-react'
 import AppSidebar from '../components/AppSidebar'
 
@@ -16,6 +16,7 @@ export default function Dashboard({ onNavigate }) {
     const [feedback, setFeedback] = useState(null)
     const [history, setHistory] = useState([])
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
 
     useEffect(() => {
         const savedHistory = localStorage.getItem('agentIQ_history')
@@ -37,7 +38,7 @@ export default function Dashboard({ onNavigate }) {
             setResult(data)
 
             const newHistoryItem = { query, answer: data.answer, timestamp: new Date().toISOString() }
-            const updatedHistory = [newHistoryItem, ...history].slice(50) // Fix slice to keep recent
+            const updatedHistory = [newHistoryItem, ...history].slice(50)
             setHistory(updatedHistory)
             localStorage.setItem('agentIQ_history', JSON.stringify(updatedHistory))
         } catch (err) {
@@ -67,7 +68,7 @@ export default function Dashboard({ onNavigate }) {
 
     const handleHistoryClick = (item) => {
         setQuery(item.query)
-        setResult({ answer: item.answer, sources: [] }) // Simplified for history view
+        setResult({ answer: item.answer, sources: [] })
     }
 
     const handleClearHistory = () => {
@@ -76,16 +77,13 @@ export default function Dashboard({ onNavigate }) {
     }
 
     const getConfidenceColor = (c) => {
-        if (c >= 80) return '#10b981' // Emerald 500
-        if (c >= 50) return '#f59e0b' // Amber 500
-        return '#ef4444' // Red 500
+        if (c >= 80) return '#10b981'
+        if (c >= 50) return '#f59e0b'
+        return '#ef4444'
     }
 
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-
-    const pinnedHistory = history.filter((_, i) => i < 3)
-    const todayHistory = history.filter((_, i) => i >= 3 && i < 8)
 
     const quickActions = [
         { icon: BookOpen, title: 'Search Documents', desc: 'Find answers in your knowledge base.', nav: null },
@@ -95,15 +93,18 @@ export default function Dashboard({ onNavigate }) {
 
     return (
         <div style={{ display: 'flex', height: '100vh', background: '#09090b', color: '#fafafa', fontFamily: "'Work Sans', system-ui, sans-serif", overflow: 'hidden' }}>
-            <AppSidebar activePage="dashboard" onNavigate={onNavigate} />
+            <AppSidebar activePage="dashboard" onNavigate={onNavigate} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             {/* MAIN CONTENT */}
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
                 {/* Top bar */}
                 <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 24px', borderBottom: '1px solid #27272a'
                 }}>
+                    <button className="sidebar-mobile-toggle" onClick={() => setSidebarOpen(true)}>
+                        <Menu style={{ width: '18px', height: '18px' }} />
+                    </button>
                     <div style={{
                         width: '32px', height: '32px', borderRadius: '50%',
                         background: '#f4f4f5', color: '#09090b',
@@ -116,9 +117,9 @@ export default function Dashboard({ onNavigate }) {
                 <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', scrollBehavior: 'smooth' }}>
                     {/* Empty State */}
                     {!result && !loading && !error && (
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px 20px' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 16px 20px' }}>
                             {/* Greeting */}
-                            <h1 style={{ fontSize: '32px', fontWeight: 600, textAlign: 'center', margin: '0 0 12px', color: '#fafafa', letterSpacing: '-0.02em' }}>
+                            <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)', fontWeight: 600, textAlign: 'center', margin: '0 0 12px', color: '#fafafa', letterSpacing: '-0.02em' }}>
                                 {greeting}, <span style={{ color: '#a1a1aa' }}>human.</span>
                             </h1>
 
@@ -146,7 +147,7 @@ export default function Dashboard({ onNavigate }) {
                                             }}
                                             autoFocus
                                         />
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                                             <div style={{ display: 'flex', gap: '8px' }}>
                                                 <button type="button" onClick={() => onNavigate('upload')} style={{
                                                     display: 'flex', alignItems: 'center', gap: '6px',
@@ -175,7 +176,7 @@ export default function Dashboard({ onNavigate }) {
                             </div>
 
                             {/* Quick Actions */}
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', width: '100%', maxWidth: '640px', marginTop: '24px' }}>
+                            <div className="grid-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', width: '100%', maxWidth: '640px', marginTop: '24px' }}>
                                 {quickActions.map((action, i) => (
                                     <button key={i} onClick={() => action.nav && onNavigate(action.nav)} style={{
                                         textAlign: 'left', padding: '16px', borderRadius: '8px',
@@ -199,13 +200,13 @@ export default function Dashboard({ onNavigate }) {
 
                     {/* Chat Style UI */}
                     {(result || loading || error) && (
-                        <div style={{ maxWidth: '768px', margin: '0 auto', width: '100%', padding: '40px 24px 100px' }}>
+                        <div style={{ maxWidth: '768px', margin: '0 auto', width: '100%', padding: '40px 16px 100px' }}>
                             {/* User Query */}
                             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
                                 <div style={{
                                     background: '#18181b', padding: '12px 18px', borderRadius: '20px 20px 4px 20px',
                                     color: '#fafafa', fontSize: '15px', lineHeight: '1.5', border: '1px solid #27272a',
-                                    maxWidth: '80%'
+                                    maxWidth: '85%'
                                 }}>
                                     {query}
                                 </div>
@@ -230,15 +231,15 @@ export default function Dashboard({ onNavigate }) {
 
                             {/* Result */}
                             {result && (
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', animation: 'fadeIn 0.3s ease-out' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', animation: 'fadeIn 0.3s ease-out' }}>
                                     <div style={{
                                         width: '32px', height: '32px', borderRadius: '50%', background: '#fafafa', flexShrink: 0,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                                     }}>
                                         <Brain style={{ width: '18px', height: '18px', color: '#09090b' }} />
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '15px', lineHeight: '1.6', color: '#e4e4e7', whiteSpace: 'pre-wrap' }}>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: '15px', lineHeight: '1.6', color: '#e4e4e7', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                                             {result.answer}
                                         </div>
 
@@ -248,7 +249,7 @@ export default function Dashboard({ onNavigate }) {
                                                 <p style={{ fontSize: '11px', fontWeight: 600, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
                                                     Sources
                                                 </p>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
+                                                <div className="grid-sources" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
                                                     {result.sources.map((source, i) => (
                                                         <div key={i} style={{
                                                             padding: '10px', borderRadius: '6px', background: '#18181b',
@@ -277,7 +278,7 @@ export default function Dashboard({ onNavigate }) {
                                         )}
 
                                         {/* Feedback */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '16px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '16px', flexWrap: 'wrap' }}>
                                             <button onClick={() => handleFeedback(true)} disabled={feedback !== null} style={{
                                                 background: 'transparent', border: 'none', cursor: feedback ? 'default' : 'pointer',
                                                 color: feedback === 'positive' ? '#10b981' : '#52525b', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px'
@@ -311,12 +312,12 @@ export default function Dashboard({ onNavigate }) {
                                     background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)',
                                     color: '#f87171', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px'
                                 }}>
-                                    <AlertCircle style={{ width: '18px', height: '18px' }} />
-                                    {error}
+                                    <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+                                    <span style={{ wordBreak: 'break-word' }}>{error}</span>
                                 </div>
                             )}
 
-                            {/* Reset Button (when valid result exists) */}
+                            {/* Reset Button */}
                             {result && (
                                 <div style={{ textAlign: 'center', marginTop: '40px' }}>
                                     <button onClick={() => { setResult(null); setQuery(''); }} style={{
@@ -333,7 +334,7 @@ export default function Dashboard({ onNavigate }) {
                 </div>
             </main>
 
-            {/* Input Animation Styles */}
+            {/* Animations */}
             <style>{`
                 @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
